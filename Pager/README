@@ -1,0 +1,17 @@
+Objective:
+
+Example of using Symbol Sync Block
+Example use of Corrlator Access Code - Tagged
+
+
+This Flowgraph take the waveform saved 
+using GQRX and decode it
+This is configured to receive Pager signals from
+Eversource.
+
+Eversource Energy Service Company
+SOUTH MOUNTAIN WILLIS ST + Multiple Other locations
+BRISTOL, CT HARTFORD County  
+Fequency: 000154.46375000 FSK (Bristal Has a Transmitter)
+
+rtl_fm -M fm -f 154463600 -s 22050 -g 100 -l 310  | multimon-ng -t raw -a POCSAG512 -a POCSAG1200 -a POCSAG2400 -a scope /dev/stdin

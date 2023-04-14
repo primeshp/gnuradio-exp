@@ -1,0 +1,8 @@
+This is the BPSK Transmitter and Receiver
+Validated the functioning
+
+Modified Python Block for packet creating as it had issues with GR 3.8
+
+Transmitter Uses USRP
+Receiver uses RTL Remote IQ server (rtl_tcp)
+

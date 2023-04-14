@@ -77,7 +77,7 @@ blocks:
 - name: phase_bw
   id: variable
   parameters:
-    comment: Phase Bandwidth is typically 2*pi/100
+    comment: ''
     value: '0.0628'
   states:
     bus_sink: false
@@ -156,8 +156,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1408, 768.0]
-    rotation: 0
+    coordinate: [816, 776.0]
+    rotation: 180
     state: true
 - name: blocks_repack_bits_bb_1
   id: blocks_repack_bits_bb
@@ -212,7 +212,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [272, 156.0]
+    coordinate: [744, 332.0]
     rotation: 0
     state: disabled
 - name: digital_constellation_decoder_cb_0
@@ -240,16 +240,16 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    tagname: '"packet_len"'
-    threshold: '1'
+    tagname: packet_len
+    threshold: thresh
     type: byte
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 684.0]
+    coordinate: [608, 660.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: digital_costas_loop_cc_0
   id: digital_costas_loop_cc
   parameters:
@@ -259,7 +259,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     order: order
-    use_snr: 'True'
+    use_snr: 'False'
     w: phase_bw
   states:
     bus_sink: false
@@ -281,8 +281,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1352, 676.0]
-    rotation: 0
+    coordinate: [1104, 756.0]
+    rotation: 180
     state: disabled
 - name: digital_diff_decoder_bb_0
   id: digital_diff_decoder_bb
@@ -362,28 +362,22 @@ blocks:
     coordinate: [176, 444.0]
     rotation: 0
     state: true
-- name: low_pass_filter_0
-  id: low_pass_filter
+- name: mmse_resampler_xx_0
+  id: mmse_resampler_xx
   parameters:
     affinity: ''
     alias: ''
-    beta: '6.76'
     comment: ''
-    cutoff_freq: '65000'
-    decim: int((usrp_rate/samp_rate)*rs_ratio)
-    gain: '1'
-    interp: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samp_rate: usrp_rate
-    type: fir_filter_ccf
-    width: '5000'
-    win: firdes.WIN_HAMMING
+    phase_shift: '0'
+    resamp_ratio: ((usrp_rate/samp_rate)*rs_ratio)
+    type: complex
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [432, 164.0]
+    coordinate: [432, 304.0]
     rotation: 0
     state: enabled
 - name: note_0
@@ -442,7 +436,7 @@ blocks:
     ant7: ''
     ant8: ''
     ant9: ''
-    args: '"rtl=0'
+    args: '"rtl_tcp=192.168.21.49:1234"'
     bb_gain0: '20'
     bb_gain1: '20'
     bb_gain10: '20'
@@ -884,7 +878,7 @@ blocks:
     color8: '"dark red"'
     color9: '"dark green"'
     comment: ''
-    ctrlpanel: 'True'
+    ctrlpanel: 'False'
     fc: '0'
     fftsize: '1024'
     freqhalf: 'True'
@@ -931,9 +925,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [688, 280.0]
+    coordinate: [576, 152.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -1041,7 +1035,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [712, 212.0]
+    coordinate: [888, 260.0]
     rotation: 0
     state: true
 - name: virtual_sink_1
@@ -1107,25 +1101,25 @@ blocks:
 
 connections:
 - [blocks_repack_bits_bb_1, '0', blocks_tagged_stream_to_pdu_0, '0']
-- [blocks_tagged_stream_to_pdu_0, pdus, blocks_message_debug_1, print]
+- [blocks_tagged_stream_to_pdu_0, pdus, blocks_message_debug_1, print_pdu]
 - [blocks_tagged_stream_to_pdu_0, pdus, digital_crc32_async_bb_0, in]
-- [blocks_throttle_0, '0', low_pass_filter_0, '0']
+- [blocks_throttle_0, '0', virtual_sink_0, '0']
 - [digital_constellation_decoder_cb_0, '0', virtual_sink_1, '0']
 - [digital_correlate_access_code_xx_ts_0, '0', blocks_repack_bits_bb_1, '0']
 - [digital_costas_loop_cc_0, '0', digital_constellation_decoder_cb_0, '0']
 - [digital_costas_loop_cc_0, '0', qtgui_const_sink_x_0, '0']
-- [digital_crc32_async_bb_0, out, blocks_message_debug_1, print_pdu]
 - [digital_diff_decoder_bb_0, '0', digital_map_bb_0, '0']
 - [digital_lms_dd_equalizer_cc_0, '0', digital_costas_loop_cc_0, '0']
 - [digital_lms_dd_equalizer_cc_0, '0', qtgui_time_sink_x_0, '0']
 - [digital_map_bb_0, '0', digital_correlate_access_code_xx_ts_0, '0']
 - [digital_symbol_sync_xx_0, '0', digital_lms_dd_equalizer_cc_0, '0']
-- [low_pass_filter_0, '0', qtgui_freq_sink_x_0, '0']
-- [low_pass_filter_0, '0', virtual_sink_0, '0']
-- [osmosdr_source_0, '0', low_pass_filter_0, '0']
+- [mmse_resampler_xx_0, '0', blocks_throttle_0, '0']
+- [mmse_resampler_xx_0, '0', virtual_sink_0, '0']
+- [osmosdr_source_0, '0', mmse_resampler_xx_0, '0']
+- [osmosdr_source_0, '0', qtgui_freq_sink_x_0, '0']
 - [virtual_source_0, '0', digital_symbol_sync_xx_0, '0']
 - [virtual_source_1, '0', digital_diff_decoder_bb_0, '0']
-- [zeromq_sub_source_0, '0', blocks_throttle_0, '0']
+- [zeromq_sub_source_0, '0', mmse_resampler_xx_0, '0']
 
 metadata:
   file_format: 1
