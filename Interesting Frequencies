@@ -1,0 +1,40 @@
+AQUARION WATER COMPANY
+SIMSBURY, CT
+HARTFORD County
+000153.20750000  MHz
+
+
+Town of Farmington
+1 MONTIETH DR TOWN HALL
+FARMINGTON, CT HARTFORD County  
+153.785MHz (Active) <-4FSK?
+
+319 NEW BRITAIN AVE
+FARMINGTON, CT
+HARTFORD County
+153.740MHz
+153.935MHz
+
+*******************
+Eversource Energy Service Company
+SOUTH MOUNTAIN WILLIS ST + Multiple Other locations
+BRISTOL, CT HARTFORD County  
+000154.46375000 FSK (Bristal Has a Transmitter)
+Looks like paging
+rtl_fm -M fm -f 154463600 -s 22050 -g 100 -l 310  | multimon-ng -t raw -a POCSAG512 -a POCSAG1200 -a POCSAG2400 -a scope /dev/stdin
+
+Marcus Spectrum Holdings, LLC
+P.O. Box 1498
+33 Mitchell Dr
+Manchester, CT 06045
+ATTN SHAWN BALD
+
+157.74MHZ (FSK Pager?)
+
+
+ TOWN OF CANTON
+50 OLD RIVER ROAD
+COLLINSVILLE, CT 
+ 90.35 - WASTEWATER COLLECTION FOR THE TOWN OF CANTON CT  
+ 150.815MHZ (4FSK)
+ 150.845MHz (4FSK)
