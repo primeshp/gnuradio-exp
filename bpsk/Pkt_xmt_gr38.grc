@@ -74,7 +74,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1064, 28.0]
+    coordinate: [1040, 28.0]
     rotation: 0
     state: true
 - name: rs_ratio
@@ -117,7 +117,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '768000'
+    value: '960000'
   states:
     bus_sink: false
     bus_source: false
@@ -135,7 +135,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [888, 24.0]
+    coordinate: [784, 24.0]
     rotation: 0
     state: disabled
 - name: blocks_message_strobe_0
@@ -199,35 +199,14 @@ blocks:
     ignoretag: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: samp_rate
+    samples_per_second: usrp_rate
     type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [216, 356.0]
-    rotation: 0
-    state: disabled
-- name: channels_channel_model_0
-  id: channels_channel_model
-  parameters:
-    affinity: ''
-    alias: ''
-    block_tags: 'False'
-    comment: ''
-    epsilon: '1.0'
-    freq_offset: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    noise_voltage: '0.01'
-    seed: '0'
-    taps: 1.0 + 1.0j
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [872, 340.0]
+    coordinate: [904, 308.0]
     rotation: 0
     state: disabled
 - name: digital_constellation_modulator_0
@@ -251,22 +230,6 @@ blocks:
     coordinate: [896, 132.0]
     rotation: 0
     state: enabled
-- name: digital_crc32_async_bb_1
-  id: digital_crc32_async_bb
-  parameters:
-    affinity: ''
-    alias: ''
-    check: 'False'
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [320, 204.0]
-    rotation: 0
-    state: disabled
 - name: import_0
   id: import
   parameters:
@@ -697,7 +660,6 @@ blocks:
     sd_spec6: ''
     sd_spec7: ''
     show_lo_controls: 'False'
-    start_time: '-1.0'
     stream_args: ''
     stream_chans: '[]'
     sync: sync
@@ -759,26 +721,22 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1120, 292.0]
+    coordinate: [1112, 292.0]
     rotation: 0
     state: disabled
 
 connections:
-- [blocks_message_strobe_0, strobe, digital_crc32_async_bb_1, in]
 - [blocks_message_strobe_0, strobe, packet_format_gr38, PDU_in]
 - [blocks_multiply_const_vxx_0, '0', mmse_resampler_xx_0, '0']
 - [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_pdu_to_tagged_stream_0, '0', digital_constellation_modulator_0, '0']
-- [blocks_throttle_0, '0', blocks_multiply_const_vxx_0, '0']
-- [channels_channel_model_0, '0', zeromq_pub_sink_0, '0']
+- [blocks_throttle_0, '0', zeromq_pub_sink_0, '0']
 - [digital_constellation_modulator_0, '0', virtual_sink_0, '0']
-- [digital_crc32_async_bb_1, out, packet_format_gr38, PDU_in]
-- [mmse_resampler_xx_0, '0', channels_channel_model_0, '0']
+- [mmse_resampler_xx_0, '0', blocks_throttle_0, '0']
 - [mmse_resampler_xx_0, '0', uhd_usrp_sink_0, '0']
 - [packet_format_gr38, PDU_out0, blocks_message_debug_0, print_pdu]
 - [packet_format_gr38, PDU_out0, blocks_pdu_to_tagged_stream_0, pdus]
 - [virtual_source_0, '0', blocks_multiply_const_vxx_0, '0']
-- [virtual_source_0, '0', blocks_throttle_0, '0']
 
 metadata:
   file_format: 1

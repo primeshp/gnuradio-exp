@@ -8,7 +8,7 @@
 # Title: pkt_xmt_gr38_bpsk
 # Author: Primesh Pinto
 # Description: BPSK packet transmit using UHD (for GNURadio 3.8)
-# GNU Radio version: 3.8.2.0
+# GNU Radio version: 3.8.1.0
 
 from distutils.version import StrictVersion
 
@@ -40,7 +40,6 @@ from gnuradio import uhd
 import time
 import numpy
 import packet_format_gr38
-
 from gnuradio import qtgui
 
 class pkt_xmt_gr38_bpsk(gr.top_block, Qt.QWidget):
@@ -79,7 +78,7 @@ class pkt_xmt_gr38_bpsk(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.usrp_rate = usrp_rate = 768000
+        self.usrp_rate = usrp_rate = 960000
         self.sps = sps = 2
         self.samp_rate = samp_rate = 48000
         self.rs_ratio = rs_ratio = 1.000
@@ -188,7 +187,6 @@ class pkt_xmt_gr38_bpsk(gr.top_block, Qt.QWidget):
         self.connect((self.digital_constellation_modulator_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.mmse_resampler_xx_0, 0), (self.uhd_usrp_sink_0, 0))
 
-
     def closeEvent(self, event):
         self.settings = Qt.QSettings("GNU Radio", "pkt_xmt_gr38_bpsk")
         self.settings.setValue("geometry", self.saveGeometry())
@@ -245,8 +243,6 @@ class pkt_xmt_gr38_bpsk(gr.top_block, Qt.QWidget):
 
 
 
-
-
 def main(top_block_cls=pkt_xmt_gr38_bpsk, options=None):
 
     if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
@@ -255,9 +251,7 @@ def main(top_block_cls=pkt_xmt_gr38_bpsk, options=None):
     qapp = Qt.QApplication(sys.argv)
 
     tb = top_block_cls()
-
     tb.start()
-
     tb.show()
 
     def sig_handler(sig=None, frame=None):
@@ -273,9 +267,9 @@ def main(top_block_cls=pkt_xmt_gr38_bpsk, options=None):
     def quitting():
         tb.stop()
         tb.wait()
-
     qapp.aboutToQuit.connect(quitting)
     qapp.exec_()
+
 
 if __name__ == '__main__':
     main()

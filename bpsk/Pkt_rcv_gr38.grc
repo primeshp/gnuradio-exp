@@ -62,6 +62,48 @@ blocks:
     coordinate: [344, 12.0]
     rotation: 0
     state: enabled
+- name: freq_offset
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Frequency Offset
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0.001'
+    step: '0.005'
+    stop: '0.2'
+    value: '0.01'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1072, 28.0]
+    rotation: 0
+    state: true
+- name: noise
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Channel noise
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0.001'
+    step: '0.005'
+    stop: '0.2'
+    value: '0.01'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [936, 28.0]
+    rotation: 0
+    state: true
 - name: order
   id: variable
   parameters:
@@ -156,8 +198,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [816, 776.0]
-    rotation: 180
+    coordinate: [1424, 648.0]
+    rotation: 0
     state: true
 - name: blocks_repack_bits_bb_1
   id: blocks_repack_bits_bb
@@ -179,6 +221,25 @@ blocks:
     coordinate: [896, 668.0]
     rotation: 0
     state: enabled
+- name: blocks_tag_debug_0
+  id: blocks_tag_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display: 'True'
+    filter: '""'
+    name: ''
+    num_inputs: '1'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [872, 748.0]
+    rotation: 0
+    state: true
 - name: blocks_tagged_stream_to_pdu_0
   id: blocks_tagged_stream_to_pdu
   parameters:
@@ -205,14 +266,35 @@ blocks:
     ignoretag: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: samp_rate
+    samples_per_second: usrp_rate
     type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [744, 332.0]
+    coordinate: [304, 156.0]
+    rotation: 0
+    state: disabled
+- name: channels_channel_model_0
+  id: channels_channel_model
+  parameters:
+    affinity: ''
+    alias: ''
+    block_tags: 'False'
+    comment: ''
+    epsilon: '1.0'
+    freq_offset: freq_offset
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_voltage: noise
+    seed: '0'
+    taps: 1.0 + 1.0j
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 116.0]
     rotation: 0
     state: disabled
 - name: digital_constellation_decoder_cb_0
@@ -240,14 +322,14 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    tagname: packet_len
+    tagname: '"packet_len"'
     threshold: thresh
     type: byte
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [608, 660.0]
+    coordinate: [568, 660.0]
     rotation: 0
     state: enabled
 - name: digital_costas_loop_cc_0
@@ -268,22 +350,6 @@ blocks:
     coordinate: [784, 392.0]
     rotation: 0
     state: enabled
-- name: digital_crc32_async_bb_0
-  id: digital_crc32_async_bb
-  parameters:
-    affinity: ''
-    alias: ''
-    check: 'True'
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1104, 756.0]
-    rotation: 180
-    state: disabled
 - name: digital_diff_decoder_bb_0
   id: digital_diff_decoder_bb
   parameters:
@@ -377,7 +443,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [432, 304.0]
+    coordinate: [784, 280.0]
     rotation: 0
     state: enabled
 - name: note_0
@@ -436,7 +502,7 @@ blocks:
     ant7: ''
     ant8: ''
     ant9: ''
-    args: '"rtl_tcp=192.168.21.49:1234"'
+    args: '"rtl_tcp=192.168.21.66:1234"'
     bb_gain0: '20'
     bb_gain1: '20'
     bb_gain10: '20'
@@ -925,9 +991,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 152.0]
+    coordinate: [368, 280.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -1035,7 +1101,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [888, 260.0]
+    coordinate: [1336, 308.0]
     rotation: 0
     state: true
 - name: virtual_sink_1
@@ -1101,11 +1167,12 @@ blocks:
 
 connections:
 - [blocks_repack_bits_bb_1, '0', blocks_tagged_stream_to_pdu_0, '0']
-- [blocks_tagged_stream_to_pdu_0, pdus, blocks_message_debug_1, print_pdu]
-- [blocks_tagged_stream_to_pdu_0, pdus, digital_crc32_async_bb_0, in]
-- [blocks_throttle_0, '0', virtual_sink_0, '0']
+- [blocks_tagged_stream_to_pdu_0, pdus, blocks_message_debug_1, print]
+- [blocks_throttle_0, '0', channels_channel_model_0, '0']
+- [channels_channel_model_0, '0', mmse_resampler_xx_0, '0']
 - [digital_constellation_decoder_cb_0, '0', virtual_sink_1, '0']
 - [digital_correlate_access_code_xx_ts_0, '0', blocks_repack_bits_bb_1, '0']
+- [digital_correlate_access_code_xx_ts_0, '0', blocks_tag_debug_0, '0']
 - [digital_costas_loop_cc_0, '0', digital_constellation_decoder_cb_0, '0']
 - [digital_costas_loop_cc_0, '0', qtgui_const_sink_x_0, '0']
 - [digital_diff_decoder_bb_0, '0', digital_map_bb_0, '0']
@@ -1113,13 +1180,12 @@ connections:
 - [digital_lms_dd_equalizer_cc_0, '0', qtgui_time_sink_x_0, '0']
 - [digital_map_bb_0, '0', digital_correlate_access_code_xx_ts_0, '0']
 - [digital_symbol_sync_xx_0, '0', digital_lms_dd_equalizer_cc_0, '0']
-- [mmse_resampler_xx_0, '0', blocks_throttle_0, '0']
 - [mmse_resampler_xx_0, '0', virtual_sink_0, '0']
 - [osmosdr_source_0, '0', mmse_resampler_xx_0, '0']
 - [osmosdr_source_0, '0', qtgui_freq_sink_x_0, '0']
 - [virtual_source_0, '0', digital_symbol_sync_xx_0, '0']
 - [virtual_source_1, '0', digital_diff_decoder_bb_0, '0']
-- [zeromq_sub_source_0, '0', mmse_resampler_xx_0, '0']
+- [zeromq_sub_source_0, '0', blocks_throttle_0, '0']
 
 metadata:
   file_format: 1

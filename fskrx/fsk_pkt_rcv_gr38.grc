@@ -333,7 +333,7 @@ blocks:
     bus_structure: null
     coordinate: [560, 868.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: digital_binary_slicer_fb_0
   id: digital_binary_slicer_fb
   parameters:
@@ -352,7 +352,7 @@ blocks:
 - name: digital_correlate_access_code_tag_xx_0
   id: digital_correlate_access_code_tag_xx
   parameters:
-    access_code: '001111000111100110101100'
+    access_code: '"001111000111100110101100"'
     affinity: ''
     alias: ''
     comment: ''
@@ -1245,7 +1245,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [920, 564.0]
+    coordinate: [944, 548.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_1

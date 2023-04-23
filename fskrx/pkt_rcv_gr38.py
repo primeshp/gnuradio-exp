@@ -26,8 +26,6 @@ from PyQt5 import Qt
 from gnuradio import qtgui
 from gnuradio.filter import firdes
 import sip
-from gnuradio import analog
-import math
 from gnuradio import blocks
 from gnuradio import digital
 from gnuradio import filter
@@ -38,8 +36,6 @@ from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio.qtgui import Range, RangeWidget
-import osmosdr
-import time
 from gnuradio import qtgui
 
 class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
@@ -96,10 +92,57 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
         self._th_range = Range(-100, 0, 1, -50, 200)
         self._th_win = RangeWidget(self._th_range, self.set_th, 'th', "counter_slider", float)
         self.top_grid_layout.addWidget(self._th_win)
-        self.qtgui_time_sink_x_1 = qtgui.time_sink_f(
+        self.qtgui_time_sink_x_1_0 = qtgui.time_sink_f(
             1024, #size
             samp_rate/sps, #samp_rate
-            "Demod Output", #name
+            "Symbol Sync Out", #name
+            1 #number of inputs
+        )
+        self.qtgui_time_sink_x_1_0.set_update_time(0.10)
+        self.qtgui_time_sink_x_1_0.set_y_axis(-1, 1)
+
+        self.qtgui_time_sink_x_1_0.set_y_label('Amplitude', "")
+
+        self.qtgui_time_sink_x_1_0.enable_tags(True)
+        self.qtgui_time_sink_x_1_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
+        self.qtgui_time_sink_x_1_0.enable_autoscale(False)
+        self.qtgui_time_sink_x_1_0.enable_grid(False)
+        self.qtgui_time_sink_x_1_0.enable_axis_labels(True)
+        self.qtgui_time_sink_x_1_0.enable_control_panel(True)
+        self.qtgui_time_sink_x_1_0.enable_stem_plot(False)
+
+
+        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
+            'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
+        widths = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        colors = ['blue', 'red', 'green', 'black', 'cyan',
+            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
+        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 1.0, 1.0]
+        styles = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        markers = [-1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1]
+
+
+        for i in range(1):
+            if len(labels[i]) == 0:
+                self.qtgui_time_sink_x_1_0.set_line_label(i, "Data {0}".format(i))
+            else:
+                self.qtgui_time_sink_x_1_0.set_line_label(i, labels[i])
+            self.qtgui_time_sink_x_1_0.set_line_width(i, widths[i])
+            self.qtgui_time_sink_x_1_0.set_line_color(i, colors[i])
+            self.qtgui_time_sink_x_1_0.set_line_style(i, styles[i])
+            self.qtgui_time_sink_x_1_0.set_line_marker(i, markers[i])
+            self.qtgui_time_sink_x_1_0.set_line_alpha(i, alphas[i])
+
+        self._qtgui_time_sink_x_1_0_win = sip.wrapinstance(self.qtgui_time_sink_x_1_0.pyqwidget(), Qt.QWidget)
+        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_1_0_win)
+        self.qtgui_time_sink_x_1 = qtgui.time_sink_f(
+            1024, #size
+            samp_rate, #samp_rate
+            "input", #name
             1 #number of inputs
         )
         self.qtgui_time_sink_x_1.set_update_time(0.10)
@@ -109,7 +152,7 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
 
         self.qtgui_time_sink_x_1.enable_tags(True)
         self.qtgui_time_sink_x_1.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_1.enable_autoscale(True)
+        self.qtgui_time_sink_x_1.enable_autoscale(False)
         self.qtgui_time_sink_x_1.enable_grid(False)
         self.qtgui_time_sink_x_1.enable_axis_labels(True)
         self.qtgui_time_sink_x_1.enable_control_panel(True)
@@ -145,7 +188,7 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
         self.top_grid_layout.addWidget(self._qtgui_time_sink_x_1_win)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
             1024, #size
-            samp_rate, #samp_rate
+            samp_rate/sps, #samp_rate
             "", #name
             1 #number of inputs
         )
@@ -155,7 +198,7 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
         self.qtgui_time_sink_x_0.enable_tags(True)
-        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_NORM, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "packet_len")
+        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_TAG, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "start")
         self.qtgui_time_sink_x_0.enable_autoscale(False)
         self.qtgui_time_sink_x_0.enable_grid(False)
         self.qtgui_time_sink_x_0.enable_axis_labels(True)
@@ -190,103 +233,38 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
         self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win)
-        self.qtgui_freq_sink_x_0_0 = qtgui.freq_sink_c(
-            1024, #size
-            firdes.WIN_BLACKMAN_hARRIS, #wintype
-            0, #fc
-            usrp_rate, #bw
-            "RX Spectrum", #name
-            1
-        )
-        self.qtgui_freq_sink_x_0_0.set_update_time(0.10)
-        self.qtgui_freq_sink_x_0_0.set_y_axis(-140, 10)
-        self.qtgui_freq_sink_x_0_0.set_y_label('Relative Gain', 'dB')
-        self.qtgui_freq_sink_x_0_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
-        self.qtgui_freq_sink_x_0_0.enable_autoscale(False)
-        self.qtgui_freq_sink_x_0_0.enable_grid(False)
-        self.qtgui_freq_sink_x_0_0.set_fft_average(1.0)
-        self.qtgui_freq_sink_x_0_0.enable_axis_labels(True)
-        self.qtgui_freq_sink_x_0_0.enable_control_panel(True)
-
-
-
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-            "magenta", "yellow", "dark red", "dark green", "dark blue"]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_freq_sink_x_0_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_freq_sink_x_0_0.set_line_label(i, labels[i])
-            self.qtgui_freq_sink_x_0_0.set_line_width(i, widths[i])
-            self.qtgui_freq_sink_x_0_0.set_line_color(i, colors[i])
-            self.qtgui_freq_sink_x_0_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_freq_sink_x_0_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_freq_sink_x_0_0_win)
-        self.osmosdr_source_0 = osmosdr.source(
-            args="numchan=" + str(1) + " " + "rtl=0"
-        )
-        self.osmosdr_source_0.set_time_unknown_pps(osmosdr.time_spec_t())
-        self.osmosdr_source_0.set_sample_rate(usrp_rate)
-        self.osmosdr_source_0.set_center_freq(154.46375e6, 0)
-        self.osmosdr_source_0.set_freq_corr(0, 0)
-        self.osmosdr_source_0.set_gain(49, 0)
-        self.osmosdr_source_0.set_if_gain(20, 0)
-        self.osmosdr_source_0.set_bb_gain(20, 0)
-        self.osmosdr_source_0.set_antenna('', 0)
-        self.osmosdr_source_0.set_bandwidth(0, 0)
-        self.low_pass_filter_0 = filter.fir_filter_ccf(
-            int((usrp_rate/samp_rate)*rs_ratio),
-            firdes.low_pass(
-                1,
-                usrp_rate,
-                6000,
-                1000,
-                firdes.WIN_HAMMING,
-                6.76))
         self.digital_symbol_sync_xx_0 = digital.symbol_sync_ff(
-            digital.TED_EARLY_LATE,
+            digital.TED_GARDNER,
             sps,
             phase_bw,
             1.0,
             1.0,
-            1.5,
+            2,
             1,
             digital.constellation_bpsk().base(),
-            digital.IR_PFB_NO_MF,
+            digital.IR_MMSE_8TAP,
             128,
             [])
-        self.digital_correlate_access_code_tag_xx_0 = digital.correlate_access_code_tag_bb('001111000111100110101100', 1, 'start')
+        self.digital_correlate_access_code_xx_ts_1 = digital.correlate_access_code_bb_ts('00111100',
+          1, 'start')
         self.digital_binary_slicer_fb_0 = digital.binary_slicer_fb()
-        self.blocks_wavfile_sink_0 = blocks.wavfile_sink('/home/primeshp/gnuradio/fskrx/output.wav', 1, int(samp_rate/sps), 8)
-        self.blocks_tag_debug_0 = blocks.tag_debug(gr.sizeof_char*1, '', "")
-        self.blocks_tag_debug_0.set_display(True)
+        self.blocks_wavfile_source_0 = blocks.wavfile_source('/home/primeshp/gnuradio/fskrx/output9k8.wav', True)
+        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_float*1, samp_rate,True)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
-        self.analog_quadrature_demod_cf_0 = analog.quadrature_demod_cf(samp_rate/(2*math.pi*fsk_deviation_hz/8.0))
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_quadrature_demod_cf_0, 0), (self.digital_symbol_sync_xx_0, 0))
         self.connect((self.blocks_char_to_float_0, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.digital_binary_slicer_fb_0, 0), (self.digital_correlate_access_code_tag_xx_0, 0))
-        self.connect((self.digital_correlate_access_code_tag_xx_0, 0), (self.blocks_char_to_float_0, 0))
-        self.connect((self.digital_correlate_access_code_tag_xx_0, 0), (self.blocks_tag_debug_0, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 0), (self.blocks_wavfile_sink_0, 0))
+        self.connect((self.blocks_throttle_0, 0), (self.digital_symbol_sync_xx_0, 0))
+        self.connect((self.blocks_throttle_0, 0), (self.qtgui_time_sink_x_1, 0))
+        self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_throttle_0, 0))
+        self.connect((self.digital_binary_slicer_fb_0, 0), (self.digital_correlate_access_code_xx_ts_1, 0))
+        self.connect((self.digital_correlate_access_code_xx_ts_1, 0), (self.blocks_char_to_float_0, 0))
         self.connect((self.digital_symbol_sync_xx_0, 0), (self.digital_binary_slicer_fb_0, 0))
-        self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_time_sink_x_1, 0))
-        self.connect((self.low_pass_filter_0, 0), (self.analog_quadrature_demod_cf_0, 0))
-        self.connect((self.osmosdr_source_0, 0), (self.low_pass_filter_0, 0))
-        self.connect((self.osmosdr_source_0, 0), (self.qtgui_freq_sink_x_0_0, 0))
+        self.connect((self.digital_symbol_sync_xx_0, 0), (self.qtgui_time_sink_x_1_0, 0))
 
     def closeEvent(self, event):
         self.settings = Qt.QSettings("GNU Radio", "pkt_rcv_gr38")
@@ -298,9 +276,6 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
 
     def set_usrp_rate(self, usrp_rate):
         self.usrp_rate = usrp_rate
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.usrp_rate, 6000, 1000, firdes.WIN_HAMMING, 6.76))
-        self.osmosdr_source_0.set_sample_rate(self.usrp_rate)
-        self.qtgui_freq_sink_x_0_0.set_frequency_range(0, self.usrp_rate)
 
     def get_thresh(self):
         return self.thresh
@@ -319,16 +294,18 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
 
     def set_sps(self, sps):
         self.sps = sps
-        self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate/self.sps)
+        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate/self.sps)
+        self.qtgui_time_sink_x_1_0.set_samp_rate(self.samp_rate/self.sps)
 
     def get_samp_rate(self):
         return self.samp_rate
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.analog_quadrature_demod_cf_0.set_gain(self.samp_rate/(2*math.pi*self.fsk_deviation_hz/8.0))
-        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
-        self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate/self.sps)
+        self.blocks_throttle_0.set_sample_rate(self.samp_rate)
+        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate/self.sps)
+        self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
+        self.qtgui_time_sink_x_1_0.set_samp_rate(self.samp_rate/self.sps)
 
     def get_rs_ratio(self):
         return self.rs_ratio
@@ -354,7 +331,6 @@ class pkt_rcv_gr38(gr.top_block, Qt.QWidget):
 
     def set_fsk_deviation_hz(self, fsk_deviation_hz):
         self.fsk_deviation_hz = fsk_deviation_hz
-        self.analog_quadrature_demod_cf_0.set_gain(self.samp_rate/(2*math.pi*self.fsk_deviation_hz/8.0))
 
     def get_excess_bw(self):
         return self.excess_bw
